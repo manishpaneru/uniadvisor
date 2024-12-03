@@ -1,5 +1,6 @@
 import streamlit as st
-import groq
+from groq.client import Groq
+from groq.api_resources import chat_completion
 import os
 from dotenv import load_dotenv
 import plotly.graph_objects as go
@@ -10,7 +11,7 @@ import traceback
 load_dotenv()
 
 # Configure Groq client
-client = groq.Groq()
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 def get_course_information(university, course):
     """
@@ -598,7 +599,7 @@ def main():
                     st.markdown('<div class="card">', unsafe_allow_html=True)
                     st.markdown('<h3 style="color: #1e3c72;">🏢 Facilities</h3>', unsafe_allow_html=True)
                     for facility in uni_info['facilities']:
-                        st.write(f"• {facility}")
+                        st.write(f" {facility}")
                     st.markdown('</div>', unsafe_allow_html=True)
                 
                 with col2:
