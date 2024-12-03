@@ -1,5 +1,5 @@
 import streamlit as st
-import groq
+from openai import OpenAI
 import os
 from dotenv import load_dotenv
 import plotly.graph_objects as go
@@ -9,14 +9,15 @@ import traceback
 # Load environment variables
 load_dotenv()
 
-# Configure Groq client
-client = groq.Groq(
-    api_key=os.getenv("GROQ_API_KEY")
+# Configure OpenAI client
+client = OpenAI(
+    api_key=os.getenv("GROQ_API_KEY"),
+    base_url="https://api.groq.com/v1"
 )
 
 def get_course_information(university, course):
     """
-    Get detailed course information using GROQ API
+    Get detailed course information using OpenAI API
     """
     system_message = """You are a comprehensive course information bot. Return a detailed JSON object.
     Focus on providing extensive, well-researched information about the university course.
@@ -67,24 +68,23 @@ def get_course_information(university, course):
 
     try:
         chat_completion = client.chat.completions.create(
+            model="mixtral-8x7b-32768",
             messages=[
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": prompt}
             ],
-            model="mixtral-8x7b-32768",
             temperature=0.5,
-            max_tokens=4096,
+            max_tokens=4096
         )
         
         response_content = chat_completion.choices[0].message.content.strip()
-        cleaned_content = response_content
         
         try:
-            return json.loads(cleaned_content)
+            return json.loads(response_content)
         except json.JSONDecodeError as e:
             st.error(f"Error parsing course information JSON: {str(e)}")
             st.error("Full response content:")
-            st.code(cleaned_content, language="json")
+            st.code(response_content, language="json")
             return None
             
     except Exception as e:
@@ -93,7 +93,7 @@ def get_course_information(university, course):
 
 def get_university_info(university):
     """
-    Get detailed information about the university
+    Get detailed information about the university using OpenAI API
     """
     system_message = """You are a comprehensive university information bot. Return a detailed JSON object.
     Focus on providing extensive, well-researched information about the university.
@@ -151,24 +151,23 @@ def get_university_info(university):
 
     try:
         chat_completion = client.chat.completions.create(
+            model="mixtral-8x7b-32768",
             messages=[
                 {"role": "system", "content": system_message},
                 {"role": "user", "content": prompt}
             ],
-            model="mixtral-8x7b-32768",
             temperature=0.5,
-            max_tokens=4096,
+            max_tokens=4096
         )
         
         response_content = chat_completion.choices[0].message.content.strip()
-        cleaned_content = response_content
         
         try:
-            return json.loads(cleaned_content)
+            return json.loads(response_content)
         except json.JSONDecodeError as e:
             st.error(f"Error parsing university information JSON: {str(e)}")
             st.error("Full response content:")
-            st.code(cleaned_content, language="json")
+            st.code(response_content, language="json")
             return None
             
     except Exception as e:
