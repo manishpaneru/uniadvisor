@@ -11,8 +11,7 @@ load_dotenv()
 
 # Configure OpenAI client
 client = OpenAI(
-    api_key=os.getenv("GROQ_API_KEY"),
-    base_url="https://api.groq.com/v1"
+    api_key=os.getenv("GROQ_API_KEY")
 )
 
 def get_course_information(university, course):
