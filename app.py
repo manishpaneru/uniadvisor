@@ -12,35 +12,6 @@ load_dotenv()
 # Configure Groq client
 client = groq.Groq(api_key=os.getenv("GROQ_API_KEY"))
 
-def clean_json_response(response_content):
-    """
-    Clean JSON response by removing any extra text and fixing common issues
-    """
-    try:
-        # Remove any markdown formatting
-        if "```json" in response_content:
-            response_content = response_content.split("```json")[1].split("```")[0]
-        elif "```" in response_content:
-            response_content = response_content.split("```")[1]
-        
-        # Clean up the response
-        response_content = response_content.strip()
-        response_content = response_content.replace('\\_', '_')
-        
-        # Find the main JSON object
-        import re
-        json_match = re.search(r'({[\s\S]*})', response_content)
-        if json_match:
-            json_content = json_match.group(1)
-            # Fix trailing commas
-            json_content = re.sub(r',(\s*[}\]])', r'\1', json_content)
-            return json_content
-        
-        return response_content
-    except Exception as e:
-        st.error(f"Error cleaning JSON: {str(e)}")
-        return response_content
-
 def get_course_information(university, course):
     """
     Get detailed course information using GROQ API
@@ -104,7 +75,7 @@ def get_course_information(university, course):
         )
         
         response_content = chat_completion.choices[0].message.content.strip()
-        cleaned_content = clean_json_response(response_content)
+        cleaned_content = response_content
         
         try:
             return json.loads(cleaned_content)
@@ -188,7 +159,7 @@ def get_university_info(university):
         )
         
         response_content = chat_completion.choices[0].message.content.strip()
-        cleaned_content = clean_json_response(response_content)
+        cleaned_content = response_content
         
         try:
             return json.loads(cleaned_content)
