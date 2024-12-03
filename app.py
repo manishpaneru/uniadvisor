@@ -25,13 +25,18 @@ client = OpenAI(
     http_client=http_client
 )
 
+def clean_json_string(json_str):
+    """Clean JSON string by removing invalid escape characters"""
+    return json_str.replace('\\_', '_')
+
 def get_course_information(university, course):
     """
     Get detailed course information using OpenAI API
     """
     system_message = """You are a comprehensive course information bot. Return a detailed JSON object.
     Focus on providing extensive, well-researched information about the university course.
-    Include specific details about curriculum, learning outcomes, and career opportunities."""
+    Include specific details about curriculum, learning outcomes, and career opportunities.
+    Do not escape underscores in the JSON keys."""
     
     prompt = f"""Generate a detailed JSON object about the {course} at {university}. 
     Provide comprehensive information including curriculum details, career paths, and student experiences.
@@ -88,13 +93,14 @@ def get_course_information(university, course):
         )
         
         response_content = chat_completion.choices[0].message.content.strip()
+        cleaned_content = clean_json_string(response_content)
         
         try:
-            return json.loads(response_content)
+            return json.loads(cleaned_content)
         except json.JSONDecodeError as e:
             st.error(f"Error parsing course information JSON: {str(e)}")
             st.error("Full response content:")
-            st.code(response_content, language="json")
+            st.code(cleaned_content, language="json")
             return None
             
     except Exception as e:
