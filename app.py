@@ -21,7 +21,7 @@ http_client = httpx.Client()
 # Initialize OpenAI client with custom settings
 client = OpenAI(
     api_key=api_key,
-    base_url="https://api.groq.com/v1",
+    base_url="https://api.groq.com/openai/v1",
     http_client=http_client
 )
 
