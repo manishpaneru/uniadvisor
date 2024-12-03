@@ -1,5 +1,5 @@
 import streamlit as st
-from openai import OpenAI
+import groq
 import os
 from dotenv import load_dotenv
 import plotly.graph_objects as go
@@ -9,10 +9,12 @@ import traceback
 # Load environment variables
 load_dotenv()
 
-# Configure OpenAI client
-client = OpenAI(
-    api_key=os.getenv("GROQ_API_KEY")
-)
+# Configure Groq client with minimal settings
+api_key = os.getenv("GROQ_API_KEY")
+if not api_key:
+    raise ValueError("GROQ_API_KEY environment variable is not set")
+
+client = groq.Groq(api_key=api_key)
 
 def get_course_information(university, course):
     """
