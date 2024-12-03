@@ -1,6 +1,5 @@
 import streamlit as st
-from groq.client import Groq
-from groq.api_resources import chat_completion
+import groq
 import os
 from dotenv import load_dotenv
 import plotly.graph_objects as go
@@ -11,7 +10,7 @@ import traceback
 load_dotenv()
 
 # Configure Groq client
-client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+client = groq.Client(api_key=os.getenv("GROQ_API_KEY"))
 
 def get_course_information(university, course):
     """
