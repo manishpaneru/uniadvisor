@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 import json
 import traceback
 import httpx
+import re
 
 # Load environment variables
 load_dotenv()
@@ -26,8 +27,18 @@ client = OpenAI(
 )
 
 def clean_json_string(json_str):
-    """Clean JSON string by removing invalid escape characters"""
-    return json_str.replace('\\_', '_')
+    """Clean JSON string by removing invalid escape characters and fixing common JSON issues"""
+    # Remove escaped underscores
+    json_str = json_str.replace('\\_', '_')
+    
+    # Remove trailing commas in objects and arrays
+    json_str = re.sub(r',(\s*})', r'\1', json_str)
+    json_str = re.sub(r',(\s*])', r'\1', json_str)
+    
+    # Normalize line endings
+    json_str = json_str.replace('\r\n', '\n').replace('\r', '\n')
+    
+    return json_str
 
 def get_course_information(university, course):
     """
@@ -36,7 +47,11 @@ def get_course_information(university, course):
     system_message = """You are a comprehensive course information bot. Return a detailed JSON object.
     Focus on providing extensive, well-researched information about the university course.
     Include specific details about curriculum, learning outcomes, and career opportunities.
-    Do not escape underscores in the JSON keys."""
+    Important formatting rules:
+    1. Do not escape underscores in JSON keys
+    2. Do not use trailing commas
+    3. Keep JSON format consistent
+    4. Use double quotes for all strings"""
     
     prompt = f"""Generate a detailed JSON object about the {course} at {university}. 
     Provide comprehensive information including curriculum details, career paths, and student experiences.
