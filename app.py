@@ -14,7 +14,7 @@ api_key = os.getenv("GROQ_API_KEY")
 if not api_key:
     raise ValueError("GROQ_API_KEY environment variable is not set")
 
-client = groq.Groq(api_key=api_key)
+client = groq.Client(api_key=api_key)
 
 def get_course_information(university, course):
     """
